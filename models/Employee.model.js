@@ -35,7 +35,7 @@ const employeeSchema = new Schema({
   emergencyContact: String,
   currentStatus: {
     type: Boolean,
-    default: true
+    default: false
   },
   comments: String,
   imageUrl: {

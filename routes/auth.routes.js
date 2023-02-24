@@ -6,6 +6,17 @@ import jwt from 'jsonwebtoken'
 
 const authRouter = Router()
 
+ authRouter.get('/users', async (req, res) => {
+
+  try {
+    const usersList = await User.find().sort({name: 1}).select({passwordHash: 0})
+    return res.status(200).json(usersList)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({message: "Internal Server Error"})
+  }
+ })
+
 authRouter.post('/auth/sign-up/user', async (req,res) => {
   const { name, employeeCode, level, department, password, comments, imageUrl } = req.body
 
@@ -31,6 +42,34 @@ authRouter.post('/auth/sign-up/user', async (req,res) => {
   }
 })
 
+authRouter.get('/user/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    const userId = await User.findById(id)
+
+    if (!userId) {
+      return res.status(404).json({message: "User not found!"})
+    }
+    return res.status(200).json(userId)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({message: "Internal Server Error"})
+  }
+})
+
+authRouter.put('/user/edit/:id', async (req, res) => {
+  try {
+    const payload = req.body
+    const { id } = req.params
+
+    const updateUser = await User.findByIdAndUpdate({_id: id}, payload, {new: true})
+    return res.status(200).json(updateUser)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({message: "Internal Server Error"})
+  }
+})
+
 authRouter.post('/auth/login', async (req, res) => {
   const { employeeCode, password } = req.body
 
@@ -50,7 +89,7 @@ authRouter.post('/auth/login', async (req, res) => {
     const secret = process.env.JWT_SECRET
 
     const token = jwt.sign({ id: user._id, employeeCode: user.employeeCode }, secret, {expiresIn})
-    return res.status(200).json({ user: { id: user._id, name: user.name }, logged: true, jwt: token })
+    return res.status(200).json({ user: { id: user._id, name: user.name, imageUrl: user.imageUrl }, logged: true, jwt: token })
 
   } catch (error) {
     console.log(error)

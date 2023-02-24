@@ -8,11 +8,21 @@ const employeesListRouter = Router()
 employeesListRouter.get('/employee', async (req, res) => {
 
   try {
-    const employeesList = await Employee.find()
+    const employeesList = await Employee.find({currentStatus: false}).sort({name: 1}).select({passwordHash: 0})
     return res.status(200).json(employeesList)
   } catch (error) {
     console.log(error)
-    return res.status(500).json({message: "Internal Server Error - 1"})
+    return res.status(500).json({message: "Internal Server Error"})
+  }
+})
+
+employeesListRouter.get('/former-employee', async (req, res) => {
+  try {
+    const formerEmployeeList = await Employee.find({currentStatus: true}).sort({name: 1}).select({passwordHash: 0})
+    return res.status(200).json(formerEmployeeList)
+  }catch(error) {
+    console.log(error)
+    return res.status(500).json({message: "Internal Server Error"})
   }
 })
 
