@@ -70,6 +70,17 @@ authRouter.put('/user/edit/:id', async (req, res) => {
   }
 })
 
+authRouter.delete('/user/:id', async (req, res) => {
+  const { id } = req.params
+  try {
+    await User.findByIdAndDelete({_id: id})
+    res.status(204).json()
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({message: "Internal Server Error"})
+  }
+})
+
 authRouter.post('/auth/login', async (req, res) => {
   const { employeeCode, password } = req.body
 
