@@ -56,7 +56,7 @@ employeesListRouter.get('/employee/:id', async (req, res) => {
 
   try {
     const { id } = req.params
-    const employeeId = await Employee.findById(id)
+    const employeeId = await Employee.findById(id).select({passwordHash: 0})
 
     if (!employeeId) {
       return res.status(404).json({message: "Employee not found!"})

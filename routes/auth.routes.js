@@ -45,7 +45,7 @@ authRouter.post('/auth/sign-up/user', async (req,res) => {
 authRouter.get('/user/:id', async (req, res) => {
   try {
     const { id } = req.params
-    const userId = await User.findById(id)
+    const userId = await User.findById(id).select({passwordHash: 0})
 
     if (!userId) {
       return res.status(404).json({message: "User not found!"})

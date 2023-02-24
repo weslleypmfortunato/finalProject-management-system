@@ -19,7 +19,7 @@ const userSchema = new Schema({
   },
   department: {
     type: String,
-    enum: ["production", "admin", "molding", "packing", "floowrap", "warehouse", "others XXX"]
+    enum: ["generic", "production", "molding", "packing", "floorwrap", "warehouse"]
   },
   passwordHash: {
     type: String,

@@ -22,7 +22,7 @@ const employeeSchema = new Schema({
   startingDate: String,
   department: {
     type: String,
-    enum: ["production", "molding", "packing", "floorwrap", "warehouse", "others XXX"]
+    enum: ["generic", "production", "molding", "packing", "floorwrap", "warehouse"]
   },
   position: {
     type: String,
