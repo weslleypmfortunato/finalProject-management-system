@@ -8,6 +8,7 @@ import employeesListRouter from "./routes/employeesList.routes.js"
 const app = express()
 connectDB()
 
+app.options("*", cors())
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   app.use(cors())
