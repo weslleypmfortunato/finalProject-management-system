@@ -16,13 +16,12 @@ const employeeSchema = new Schema({
   phoneNumber: Number,
   level: {
     type: String,
-    enum: ["admin", "supervisor", "user"],
-    required: true
+    default: 'user'
   },
   startingDate: String,
   department: {
     type: String,
-    enum: ["generic", "production", "molding", "packing", "floorwrap", "warehouse"]
+    enum: ["generic", "production", "molding", "packing", "flowwrap", "warehouse"]
   },
   position: {
     type: String,

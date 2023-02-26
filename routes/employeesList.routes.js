@@ -2,6 +2,7 @@ import { Router } from "express";
 import Employee from '../models/Employee.model.js'
 import 'dotenv/config'
 import bcrypt from 'bcryptjs'
+import fileUpload from '../config/cloudinary.config.js'
 
 const employeesListRouter = Router()
 
@@ -80,6 +81,10 @@ employeesListRouter.put('/employee/edit/:id', async (req, res) => {
     console.log(error)
     return res.status(500).json({message: "Internal Server Error - 4"})
   }
+})
+
+employeesListRouter.post('/employee/file-upload', fileUpload.single('rogers_images'), (req, res) => {
+  return res.status(201).json({url: req.file.path})
 })
 
 export default employeesListRouter

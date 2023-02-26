@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import User from '../models/User.model.js'
 import 'dotenv/config'
 import jwt from 'jsonwebtoken'
+import fileUpload from '../config/cloudinary.config.js'
 
 const authRouter = Router()
 
@@ -100,12 +101,16 @@ authRouter.post('/auth/login', async (req, res) => {
     const secret = process.env.JWT_SECRET
 
     const token = jwt.sign({ id: user._id, employeeCode: user.employeeCode }, secret, {expiresIn})
-    return res.status(200).json({ user: { id: user._id, name: user.name, imageUrl: user.imageUrl}, logged: true, jwt: token })
+    return res.status(200).json({ user: { id: user._id, name: user.name, imageUrl: user.imageUrl, level: user.level}, logged: true, jwt: token })
 
   } catch (error) {
     console.log(error)
     return res.status(401).json({message: 'Login or Password Incorrect'})
   }
+})
+
+authRouter.post('/user/file-upload', fileUpload.single('rogers_images'), (req, res) => {
+  return res.status(201).json({url: req.file.path})
 })
 
 export default authRouter
