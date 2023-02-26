@@ -39,7 +39,7 @@ const employeeSchema = new Schema({
   comments: String,
   imageUrl: {
     type: String,
-    default: 'https://via.placeholder.com/100'
+    default: 'https://res.cloudinary.com/weslley-m-fortunato/image/upload/v1677395919/rogers_images/xjqfsyhzb3p2khw8kkwa.png'
   }
 }, {timestamps: true})
 
