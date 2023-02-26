@@ -19,7 +19,7 @@ const authRouter = Router()
   }
  })
 
-authRouter.post('/auth/sign-up/user', isAuthenticatedMiddleware, async (req,res) => {
+authRouter.post('/auth/sign-up/user', async (req,res) => {
   const { name, employeeCode, level, department, password, comments, imageUrl } = req.body
 
   try {
