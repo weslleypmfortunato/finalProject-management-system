@@ -4,10 +4,11 @@ import User from '../models/User.model.js'
 import 'dotenv/config'
 import jwt from 'jsonwebtoken'
 import fileUpload from '../config/cloudinary.config.js'
+import isAuthenticatedMiddleware from "../middlewares/isAuthenticatedMiddleware.js";
 
 const authRouter = Router()
 
- authRouter.get('/users', async (req, res) => {
+ authRouter.get('/users', isAuthenticatedMiddleware, async (req, res) => {
 
   try {
     const usersList = await User.find().sort({name: 1}).select({passwordHash: 0})
@@ -18,7 +19,7 @@ const authRouter = Router()
   }
  })
 
-authRouter.post('/auth/sign-up/user', async (req,res) => {
+authRouter.post('/auth/sign-up/user', isAuthenticatedMiddleware, async (req,res) => {
   const { name, employeeCode, level, department, password, comments, imageUrl } = req.body
 
   try {
@@ -43,7 +44,7 @@ authRouter.post('/auth/sign-up/user', async (req,res) => {
   }
 })
 
-authRouter.get('/user/:id', async (req, res) => {
+authRouter.get('/user/:id', isAuthenticatedMiddleware, async (req, res) => {
   try {
     const { id } = req.params
     const userId = await User.findById(id).select({passwordHash: 0})
@@ -71,7 +72,7 @@ authRouter.put('/user/edit/:id', async (req, res) => {
   }
 })
 
-authRouter.delete('/user/:id', async (req, res) => {
+authRouter.delete('/user/:id',isAuthenticatedMiddleware, async (req, res) => {
   const { id } = req.params
   try {
     await User.findByIdAndDelete({_id: id})
@@ -109,7 +110,7 @@ authRouter.post('/auth/login', async (req, res) => {
   }
 })
 
-authRouter.post('/user/file-upload', fileUpload.single('rogers_images'), (req, res) => {
+authRouter.post('/user/file-upload', isAuthenticatedMiddleware, fileUpload.single('rogers_images'), (req, res) => {
   return res.status(201).json({url: req.file.path})
 })
 

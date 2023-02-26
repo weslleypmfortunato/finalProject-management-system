@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import 'dotenv/config'
 
-const getTokenFronHeaders = req => {
+const getTokemFronHeaders = req => {
   if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
     console.log(req.headers.authorization)
     return req.headers.authorization.split(' ')[1]
@@ -10,7 +10,7 @@ const getTokenFronHeaders = req => {
 }
 
 const isAuthenticatedMiddleware = (req, res, next) => {
-  const token = getTokenFronHeaders(req)
+  const token = getTokemFronHeaders(req)
 
   if (!token) {
     return res.status(401).json({message: "Unauthorized -1 "})

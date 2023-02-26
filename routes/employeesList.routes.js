@@ -3,10 +3,11 @@ import Employee from '../models/Employee.model.js'
 import 'dotenv/config'
 import bcrypt from 'bcryptjs'
 import fileUpload from '../config/cloudinary.config.js'
+import isAuthenticatedMiddleware from "../middlewares/isAuthenticatedMiddleware.js";
 
 const employeesListRouter = Router()
 
-employeesListRouter.get('/employee', async (req, res) => {
+employeesListRouter.get('/employee', isAuthenticatedMiddleware, async (req, res) => {
 
   try {
     const employeesList = await Employee.find({currentStatus: false}).sort({name: 1}).select({passwordHash: 0})
@@ -17,7 +18,7 @@ employeesListRouter.get('/employee', async (req, res) => {
   }
 })
 
-employeesListRouter.get('/former-employee', async (req, res) => {
+employeesListRouter.get('/former-employee', isAuthenticatedMiddleware, async (req, res) => {
   try {
     const formerEmployeeList = await Employee.find({currentStatus: true}).sort({name: 1}).select({passwordHash: 0})
     return res.status(200).json(formerEmployeeList)
@@ -27,7 +28,7 @@ employeesListRouter.get('/former-employee', async (req, res) => {
   }
 })
 
-employeesListRouter.post('/sign-up/employee', async (req, res) => {
+employeesListRouter.post('/sign-up/employee', isAuthenticatedMiddleware, async (req, res) => {
 
   const { name, employeeCode, dob, phoneNumber, level, startingDate, department, position, password, emergencyContact, currentStatus, comments, imageUrl } = req.body
 
@@ -53,7 +54,7 @@ employeesListRouter.post('/sign-up/employee', async (req, res) => {
   }
 })
 
-employeesListRouter.get('/employee/:id', async (req, res) => {
+employeesListRouter.get('/employee/:id', isAuthenticatedMiddleware, async (req, res) => {
 
   try {
     const { id } = req.params
@@ -83,7 +84,7 @@ employeesListRouter.put('/employee/edit/:id', async (req, res) => {
   }
 })
 
-employeesListRouter.post('/employee/file-upload', fileUpload.single('rogers_images'), (req, res) => {
+employeesListRouter.post('/employee/file-upload', isAuthenticatedMiddleware, fileUpload.single('rogers_images'), (req, res) => {
   return res.status(201).json({url: req.file.path})
 })
 
