@@ -9,7 +9,7 @@ const clockInSchema = new Schema({
   },
   employeeId: {
     type: Schema.Types.ObjectId,
-    ref: "Employee"
+    ref: "User"
   }, 
   approvedBy: {
     type: Schema.Types.ObjectId,

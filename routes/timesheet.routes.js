@@ -9,8 +9,8 @@ const timesheetRouter = Router()
 
 timesheetRouter.get('/timesheet', async (req, res) => {
   try {
-    const clockInTimesheet = await ClockIn.find()
-    const clockOutTimesheet = await ClockOut.find()
+    const clockInTimesheet = await ClockIn.find().populate('employeeId')
+    const clockOutTimesheet = await ClockOut.find().populate('employeeId')
     return res.status(200).json(clockInTimesheet.concat(clockOutTimesheet))
   } catch (error) {
     console.log(error)
