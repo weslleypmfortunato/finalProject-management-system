@@ -10,6 +10,10 @@ const clockInSchema = new Schema({
   employeeId: {
     type: Schema.Types.ObjectId,
     ref: "Employee"
+  }, 
+  approvedBy: {
+    type: Schema.Types.ObjectId,
+    ref: "User"
   }
 }, { timestamps: true })
 

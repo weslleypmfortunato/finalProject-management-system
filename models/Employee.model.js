@@ -13,7 +13,7 @@ const employeeSchema = new Schema({
       unique: true
   },
   dob: String,
-  phoneNumber: Number,
+  phoneNumber: String,
   level: {
     type: String,
     default: 'user'
