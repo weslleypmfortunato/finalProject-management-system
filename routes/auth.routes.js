@@ -8,19 +8,8 @@ import isAuthenticatedMiddleware from "../middlewares/isAuthenticatedMiddleware.
 
 const authRouter = Router()
 
- authRouter.get('/users', isAuthenticatedMiddleware, async (req, res) => {
-
-  try {
-    const usersList = await User.find().sort({name: 1}).select({passwordHash: 0})
-    return res.status(200).json(usersList)
-  } catch (error) {
-    console.log(error)
-    return res.status(500).json({message: "Internal Server Error"})
-  }
- })
-
 authRouter.post('/auth/sign-up/user', isAuthenticatedMiddleware, async (req,res) => {
-  const { name, employeeCode, level, department, password, comments, imageUrl } = req.body
+  const { name, employeeCode, level, department, password, comments, imageUrl, dob, phoneNumber, startingDate, emergencyContact, currentStatus, position } = req.body
 
   try {
     const userExists = await User.findOne({employeeCode})
@@ -30,7 +19,7 @@ authRouter.post('/auth/sign-up/user', isAuthenticatedMiddleware, async (req,res)
     const salt = bcrypt.genSaltSync(+process.env.SALT_ROUNDS)
     const passwordHash = bcrypt.hashSync(password, salt)
 
-    const newUser = await User.create({ name, employeeCode, level, department, passwordHash, comments, imageUrl })
+    const newUser = await User.create({ name, employeeCode, level, department, passwordHash, comments, imageUrl, dob, phoneNumber, startingDate, emergencyContact, currentStatus, position })
     if (newUser) {
       return res.status(201).json({message: "User create successfully"})
     }

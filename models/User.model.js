@@ -29,6 +29,18 @@ const userSchema = new Schema({
   imageUrl: {
     type: String,
     default: 'https://res.cloudinary.com/weslley-m-fortunato/image/upload/v1677395919/rogers_images/xjqfsyhzb3p2khw8kkwa.png'
+  },
+  dob: String,
+  phoneNumber: String,
+  position: {
+    type: String,
+    required: true
+  },
+  startingDate: String,
+  emergencyContact: String,
+  currentStatus: {
+    type: Boolean,
+    default: false
   }
 }, {timestamps: true})
 
