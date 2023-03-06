@@ -41,6 +41,10 @@ const userSchema = new Schema({
   currentStatus: {
     type: Boolean,
     default: false
+  },
+  fulltime: {
+    type: Boolean,
+    default: true
   }
 }, {timestamps: true})
 

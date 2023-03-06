@@ -2,10 +2,12 @@ import mongoose from "mongoose";
 
 const { Schema, model } = mongoose
 
-const clockInSchema = new Schema({
-  clockIn: {
-    type: Date,
-    default: Date.now()
+const timesheetSchema = new Schema({
+  clockIn: Date,
+  clockOut: Date,
+  status: {
+    type: Boolean,
+    default: false
   },
   employeeId: {
     type: Schema.Types.ObjectId,
@@ -17,4 +19,4 @@ const clockInSchema = new Schema({
   }
 }, { timestamps: true })
 
-export default model ('ClockIn', clockInSchema)
+export default model ('Timesheet', timesheetSchema)
