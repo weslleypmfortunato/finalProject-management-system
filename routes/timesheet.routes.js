@@ -7,10 +7,20 @@ import * as timesheetRepository from '../repositories/timesheet.repositories.js'
 const timesheetRouter = Router()
 
 //CODIGO QUE TRAZ O RESULTADO POR DIA SEM SOMAR OS DIAS
-// timesheetRouter.get('/timesheet/:clockIn/:clockOut/show', async (req, res) => {
+// timesheetRouter.get('/timesheet', async (req, res) => {
 //   try {
 //     const clockInOutTimesheet = await Timesheet.find().populate('employeeId', 'name employeeCode department fulltime')
 
+//     for (let i = 0; i <= clockInOutTimesheet.length; i++) {
+//       if (clockInOutTimesheet[i].employeeId._id === clockInOutTimesheet[i].employeeId._id) {
+//         const ttlHrs = (clockInOutTimesheet[i].clockOut - clockInOutTimesheet[i].clockIn) + (clockInOutTimesheet[i].clockOut - clockInOutTimesheet[i].clockIn)
+//         return ttlHrs
+//       } else {
+//         (clockInOutTimesheet[i].clockOut - clockInOutTimesheet[i].clockIn)
+//         return ttlHrs
+//       }
+//     }
+    
 //     console.log("CLOCK ==>", clockInOutTimesheet )
 
 //     return res.status(200).json(clockInOutTimesheet)
@@ -27,9 +37,10 @@ timesheetRouter.get('/timesheet', async (req, res) => {
   try {
     const clockInOutTimesheet = await Timesheet.aggregate([
 
-      { $group: {_id: '$employeeId', totalHours: { $sum: { $subtract: ['$clockOut', '$clockIn'] } }, name: { $first: '$employee.employeeId.name' }, employeeCode: { $first: '$employee.employeeId.employeeCode' }, department: { $first: '$employee.employeeId.department' }, fulltime: { $first: '$employee.employeeId.fulltime' },   
+      { $group: {_id: '$employeeId', totalHours: { $sum: { $divide: [ { $subtract: ['$clockOut', '$clockIn'] }, 1000 * 60 * 60 ] } }, name: { $first: '$employee.employeeId.name' }, employeeCode: { $first: '$employee.employeeId.employeeCode' }, department: { $first: '$employee.employeeId.department' }, fulltime: { $first: '$employee.employeeId.fulltime' },   
      }, 
     },
+
     {
       $project: {
         _id: 1,
@@ -44,7 +55,7 @@ timesheetRouter.get('/timesheet', async (req, res) => {
 
   console.log("GET ==> ",clockInOutTimesheet)
 
-  res.json(clockInOutTimesheet);
+  return res.status(200).json(clockInOutTimesheet);
 } catch (err) {
   console.error(err);
   res.status(500).json({ message: 'Server Error' });
