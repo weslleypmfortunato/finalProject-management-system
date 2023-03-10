@@ -11,7 +11,8 @@ const timesheetSchema = new Schema({
   },
   employeeId: {
     type: Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User",
+    required: true
   }, 
   approvedBy: {
     type: Schema.Types.ObjectId,

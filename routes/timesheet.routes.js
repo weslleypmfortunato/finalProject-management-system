@@ -3,8 +3,7 @@ import { Router } from 'express'
 import isAuthenticatedMiddleware from '../middlewares/isAuthenticatedMiddleware.js'
 import Timesheet from '../models/Timesheet.model.js'
 import * as timesheetRepository from '../repositories/timesheet.repositories.js'
-import { ObjectId } from "mongodb";
-import mongoose from 'mongoose'
+
 
 const timesheetRouter = Router()
 
@@ -29,8 +28,22 @@ timesheetRouter.post('/timesheet', isAuthenticatedMiddleware, async (req, res) =
 })
 
 timesheetRouter.get('/timesheet', async (req, res) => {
+  const {startDate, endDate} = req.query
+
   try {
+    if (!startDate || !endDate) {
+      return res.status(400).json({message: "Missing start or end date"})
+    }
     const clockInOutTimesheet = await Timesheet.aggregate([
+
+      {
+        $match: {
+          clockIn: {
+            $gt: new Date(startDate),
+            $lt: new Date(endDate),
+          },
+        },
+      },
 
       {
         $group: {
@@ -101,7 +114,6 @@ timesheetRouter.get('/timesheet', async (req, res) => {
           singleClockInOutTimesheet.totalHours = `${hour}:0${minutes}`
         }
 
-
       } else if (singleClockInOutTimesheet.fulltime === false) {
         singleClockInOutTimesheet.totalHours += 0.25 * singleClockInOutTimesheet.count
         let hour = parseInt(Number(singleClockInOutTimesheet.totalHours))
@@ -111,15 +123,13 @@ timesheetRouter.get('/timesheet', async (req, res) => {
         if (singleClockInOutTimesheet.totalHours.split(':')[1] === "0") {
           singleClockInOutTimesheet.totalHours = `${hour}:00`
         }
-        
+
         if (singleClockInOutTimesheet.totalHours.split(':')[1].length === 1 && singleClockInOutTimesheet.totalHours.split(':')[1]!== "0" ) {
           singleClockInOutTimesheet.totalHours = `${hour}:0${minutes}`
         }
       } 
       return singleClockInOutTimesheet
   })
-
-  console.log("CLOCKINOUTTIMESHEET ==> ", clockInOutTimesheet)
   return res.status(200).json(clockInOutTimesheet);
 } catch (err) {
   console.error(err);
@@ -128,16 +138,12 @@ timesheetRouter.get('/timesheet', async (req, res) => {
 });
 
 
-
 timesheetRouter.get('/timesheet/:id', isAuthenticatedMiddleware, async (req, res) => {
   try {
-    // const id = mongoose.Types.ObjectId(req.params.id.trim())
-    const id = req.params.toString();
 
-    // const { id } = req.params
-    const timesheetId = await Timesheet.findById({employeeId: id}).select({passwordHash: 0}).populate('employeeId', 'name employeeCode department fulltime')
+    const { id } = req.params
 
-    console.log("timesheeID  ==> ", timesheetId)
+    const timesheetId = await Timesheet.find({employeeId: id}).select({passwordHash: 0}).populate('employeeId', 'name employeeCode department fulltime')
 
     if (!timesheetId) {
       return res.status(404).json({message: "Timesheet not found!"})
@@ -152,6 +158,42 @@ timesheetRouter.get('/timesheet/:id', isAuthenticatedMiddleware, async (req, res
 timesheetRouter.get('/my-timesheet', isAuthenticatedMiddleware, async (req, res) => {
   try {
     const myTimesheet = await Timesheet.find({ employeeId: req.user.id }).populate('employeeId', 'name employeeCode department fulltime')
+
+    // myTimesheet.map(singleTimesheet => {
+
+    //   if (singleTimesheet.employeeId.fulltime === true) {
+    //     let workedHoursInMs = (((singleTimesheet.clockOut - singleTimesheet.clockIn) - 1800000) / 3600000).toString()
+
+    //     let hour = parseInt(Number(workedHoursInMs))
+    //     let minutes = Math.round((Number(workedHoursInMs)-hour) * 60)
+
+    //     if (minutes >= 60) {
+    //       hour += 1
+    //       minutes -= 60
+    //     }
+    //     singleTimesheet.employeeId.department = `${hour}:${minutes}`
+
+    //     if (singleTimesheet.employeeId.department.split(':')[1] === "0") {
+    //       singleTimesheet.employeeId.department = `${hour}:00`
+    //     } 
+
+    //     if (singleTimesheet.employeeId.department.split(':')[1].length === 1 && singleTimesheet.employeeId.department.split(':')[1]!== "0" ) {
+    //       singleTimesheet.employeeId.department = `${hour}:0${minutes}`
+    //     }
+
+        
+    //     console.log("WORKED HOURS ==> ", workedHoursInMs)
+    //     console.log("Horas ==> ", hour)
+    //     console.log("Min ==> ", minutes)
+    //     console.log("SINGLE ==> ", singleTimesheet)
+    //     console.log("SINGLE.TEST ==> ", singleTimesheet.employeeId.department)
+    //   }
+    //   return singleTimesheet
+    // })
+    
+   
+    
+    console.log("MY TIMESHEET ==> ", myTimesheet)
     return res.status(200).json(myTimesheet)
   } catch (error) {
     console.log(error)
