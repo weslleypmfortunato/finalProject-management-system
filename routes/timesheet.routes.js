@@ -1,13 +1,13 @@
 import 'dotenv/config'
 import { Router } from 'express'
 import isAuthenticatedMiddleware from '../middlewares/isAuthenticatedMiddleware.js'
+import clockInOutMiddleware from '../middlewares/clockInOutMiddleware.js'
 import Timesheet from '../models/Timesheet.model.js'
 import * as timesheetRepository from '../repositories/timesheet.repositories.js'
 
-
 const timesheetRouter = Router()
 
-timesheetRouter.post('/timesheet', isAuthenticatedMiddleware, async (req, res) => {
+timesheetRouter.post('/timesheet/clockin-clockout', clockInOutMiddleware, async (req, res) => {
   try {
     const noClockOut = await timesheetRepository.findByClockOut(req.user.id)
     if (noClockOut) {
@@ -39,8 +39,8 @@ timesheetRouter.get('/timesheet', async (req, res) => {
       {
         $match: {
           clockIn: {
-            $gt: new Date(startDate),
-            $lt: new Date(endDate),
+            $gte: new Date(startDate),
+            $lte: new Date(endDate),
           },
         },
       },
@@ -137,13 +137,12 @@ timesheetRouter.get('/timesheet', async (req, res) => {
 }
 });
 
-
-timesheetRouter.get('/timesheet/:id', isAuthenticatedMiddleware, async (req, res) => {
+timesheetRouter.get('/timesheet/:id/', isAuthenticatedMiddleware, async (req, res) => {
   try {
 
     const { id } = req.params
 
-    const timesheetId = await Timesheet.find({employeeId: id}).select({passwordHash: 0}).populate('employeeId', 'name employeeCode department fulltime')
+    const timesheetId = await Timesheet.find({employeeId: id}).sort({clockIn: - 1}).select({passwordHash: 0}).populate('employeeId', 'name employeeCode department fulltime status')
 
     if (!timesheetId) {
       return res.status(404).json({message: "Timesheet not found!"})
@@ -155,45 +154,20 @@ timesheetRouter.get('/timesheet/:id', isAuthenticatedMiddleware, async (req, res
   }
 })
 
+timesheetRouter.put('/timesheet/approval', isAuthenticatedMiddleware, async (req, res) => {
+  try {
+    let { ids } = req.body
+    const timesheetApproval = await Timesheet.updateMany({_id: {$in: ids}, status: false }, {status: true})
+    return res.status(200).json(timesheetApproval)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({message: "Internal Server"})
+  }
+})
+
 timesheetRouter.get('/my-timesheet', isAuthenticatedMiddleware, async (req, res) => {
   try {
-    const myTimesheet = await Timesheet.find({ employeeId: req.user.id }).populate('employeeId', 'name employeeCode department fulltime')
-
-    // myTimesheet.map(singleTimesheet => {
-
-    //   if (singleTimesheet.employeeId.fulltime === true) {
-    //     let workedHoursInMs = (((singleTimesheet.clockOut - singleTimesheet.clockIn) - 1800000) / 3600000).toString()
-
-    //     let hour = parseInt(Number(workedHoursInMs))
-    //     let minutes = Math.round((Number(workedHoursInMs)-hour) * 60)
-
-    //     if (minutes >= 60) {
-    //       hour += 1
-    //       minutes -= 60
-    //     }
-    //     singleTimesheet.employeeId.department = `${hour}:${minutes}`
-
-    //     if (singleTimesheet.employeeId.department.split(':')[1] === "0") {
-    //       singleTimesheet.employeeId.department = `${hour}:00`
-    //     } 
-
-    //     if (singleTimesheet.employeeId.department.split(':')[1].length === 1 && singleTimesheet.employeeId.department.split(':')[1]!== "0" ) {
-    //       singleTimesheet.employeeId.department = `${hour}:0${minutes}`
-    //     }
-
-        
-    //     console.log("WORKED HOURS ==> ", workedHoursInMs)
-    //     console.log("Horas ==> ", hour)
-    //     console.log("Min ==> ", minutes)
-    //     console.log("SINGLE ==> ", singleTimesheet)
-    //     console.log("SINGLE.TEST ==> ", singleTimesheet.employeeId.department)
-    //   }
-    //   return singleTimesheet
-    // })
-    
-   
-    
-    console.log("MY TIMESHEET ==> ", myTimesheet)
+    const myTimesheet = await Timesheet.find({ employeeId: req.user.id }).sort({clockIn: - 1}).populate('employeeId', 'name employeeCode department fulltime')
     return res.status(200).json(myTimesheet)
   } catch (error) {
     console.log(error)
@@ -201,4 +175,4 @@ timesheetRouter.get('/my-timesheet', isAuthenticatedMiddleware, async (req, res)
   }
 })
 
-export default timesheetRouter
+export default (timesheetRouter)
