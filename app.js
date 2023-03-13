@@ -5,6 +5,7 @@ import connectDB from "./config/db.connection.js"
 import authRouter from "./routes/auth.routes.js"
 import employeesListRouter from "./routes/employeesList.routes.js"
 import timesheetRouter from "./routes/timesheet.routes.js"
+import productRouter from "./routes/productsList.routes.js"
 
 const app = express()
 connectDB()
@@ -22,6 +23,7 @@ app.use(express.json())
 app.use(authRouter)
 app.use(employeesListRouter)
 app.use(timesheetRouter)
+app.use(productRouter)
 
 app.get('/test', (req, res) => {
   res.send('API working properly!')
