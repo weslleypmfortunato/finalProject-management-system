@@ -29,13 +29,11 @@ timesheetRouter.post('/timesheet/clockin-clockout', clockInOutMiddleware, async 
 
 timesheetRouter.get('/timesheet', async (req, res) => {
   const {startDate, endDate} = req.query
-
   try {
     if (!startDate || !endDate) {
       return res.status(400).json({message: "Missing start or end date"})
     }
     const clockInOutTimesheet = await Timesheet.aggregate([
-
       {
         $match: {
           clockIn: {
@@ -44,7 +42,6 @@ timesheetRouter.get('/timesheet', async (req, res) => {
           },
         },
       },
-
       {
         $group: {
           _id: "$employeeId",
@@ -60,7 +57,6 @@ timesheetRouter.get('/timesheet', async (req, res) => {
           }
         }
       },
-
       {
         $lookup: {
           from: "users",
@@ -69,7 +65,6 @@ timesheetRouter.get('/timesheet', async (req, res) => {
           as: "employee"
         }
       },
-
       {
         $replaceRoot: {
           newRoot: {
@@ -82,11 +77,9 @@ timesheetRouter.get('/timesheet', async (req, res) => {
           }
         }
       }, 
-
       {
         $unset: "employee"
       },
-
       {
         $sort: {
           department: 1 , name: 1
@@ -139,9 +132,7 @@ timesheetRouter.get('/timesheet', async (req, res) => {
 
 timesheetRouter.get('/timesheet/:id/', isAuthenticatedMiddleware, async (req, res) => {
   try {
-
     const { id } = req.params
-
     const timesheetId = await Timesheet.find({employeeId: id}).sort({clockIn: - 1}).select({passwordHash: 0}).populate('employeeId', 'name employeeCode department fulltime status')
 
     if (!timesheetId) {
@@ -158,11 +149,38 @@ timesheetRouter.put('/timesheet/approval', isAuthenticatedMiddleware, async (req
   try {
     let { ids } = req.body
     const timesheetApproval = await Timesheet.updateMany({_id: {$in: ids}, status: false }, {status: true}, )
-    console.log("AQUI ==> ", req.body)
     return res.status(200).json(timesheetApproval)
   } catch (error) {
     console.log(error)
     return res.status(500).json({message: "Internal Server"})
+  }
+})
+
+timesheetRouter.get('/timesheet/employee/:id', isAuthenticatedMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params
+    const timesheetId = await Timesheet.findById(id).select({passwordHash: 0})
+
+    if (!timesheetId) {
+      return res.status(404).json({message: "User not found!"})
+    }
+    return res.status(200).json(timesheetId)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({message: "Internal Server Error"})
+  }
+})
+
+timesheetRouter.put('/timesheet/edit/:id', async (req, res) => {
+  try {
+    const payload = req.body
+    const { id } = req.params
+
+    const updateTimesheet = await Timesheet.findByIdAndUpdate({_id: id}, payload, {new: true})
+    return res.status(200).json(updateTimesheet)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({message: "Internal Server Error"})
   }
 })
 
