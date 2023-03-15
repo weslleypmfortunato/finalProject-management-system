@@ -26,6 +26,5 @@ employeesListRouter.get('/former-employee', isAuthenticatedMiddleware, async (re
   }
 })
 
-
 export default employeesListRouter
 

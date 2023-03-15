@@ -157,7 +157,8 @@ timesheetRouter.get('/timesheet/:id/', isAuthenticatedMiddleware, async (req, re
 timesheetRouter.put('/timesheet/approval', isAuthenticatedMiddleware, async (req, res) => {
   try {
     let { ids } = req.body
-    const timesheetApproval = await Timesheet.updateMany({_id: {$in: ids}, status: false }, {status: true})
+    const timesheetApproval = await Timesheet.updateMany({_id: {$in: ids}, status: false }, {status: true}, )
+    console.log("AQUI ==> ", req.body)
     return res.status(200).json(timesheetApproval)
   } catch (error) {
     console.log(error)
