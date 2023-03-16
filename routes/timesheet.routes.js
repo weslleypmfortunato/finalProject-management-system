@@ -152,7 +152,7 @@ timesheetRouter.put('/timesheet/approval', isAuthenticatedMiddleware, async (req
     return res.status(200).json(timesheetApproval)
   } catch (error) {
     console.log(error)
-    return res.status(500).json({message: "Internal Server"})
+    return res.status(500).json({message: "Internal server error. Try to update the page!"})
   }
 })
 
@@ -180,7 +180,7 @@ timesheetRouter.put('/timesheet/edit/:id', async (req, res) => {
     return res.status(200).json(updateTimesheet)
   } catch (error) {
     console.log(error)
-    return res.status(500).json({message: "Internal Server Error"})
+    return res.status(500).json({message: "Internal server error. Update the page and try again. Remember to keep the same date format."})
   }
 })
 

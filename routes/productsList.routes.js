@@ -22,7 +22,7 @@ productRouter.post('/products/new', isAuthenticatedMiddleware, async (req, res) 
     console.log(error)
 
     if (error.message === "Product code already in use") {
-      return res.status(409).json({message: "Product code or description are already in use"})
+      return res.status(409).json({message: "Product code already in use"})
     }
     return res.status(500).json({message: "Internal Server Error"})
   }
@@ -31,7 +31,7 @@ productRouter.post('/products/new', isAuthenticatedMiddleware, async (req, res) 
 productRouter.get('/products', isAuthenticatedMiddleware, async (req, res) => {
 
   try {
-    const productsList = await Products.find().sort({ productCode: -1 })
+    const productsList = await Products.find().sort({ productCode: 1 })
     return res.status(200).json(productsList)
   } catch (error) {
     console.log(error)
