@@ -133,7 +133,18 @@ timesheetRouter.get('/timesheet', async (req, res) => {
 timesheetRouter.get('/timesheet/:id/', isAuthenticatedMiddleware, async (req, res) => {
   try {
     const { id } = req.params
-    const timesheetId = await Timesheet.find({employeeId: id}).sort({clockIn: - 1}).select({passwordHash: 0}).populate('employeeId', 'name employeeCode department fulltime status')
+    const {startDate, endDate} = req.query
+
+    let query = { employeeId: id }
+
+    if (startDate && endDate) {
+      query.clockIn = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate)
+      }
+    }
+
+    const timesheetId = await Timesheet.find(query).sort({clockIn: - 1}).select({passwordHash: 0}).populate('employeeId', 'name employeeCode department fulltime status')
 
     if (!timesheetId) {
       return res.status(404).json({message: "Timesheet not found!"})
