@@ -18,7 +18,7 @@ The employee management application provides a comprehensive solution to manage 
 
 📡 Stay aware of what is happening in your business wherever you are, anytime you like. </p>
 
-<h2>🛰 Used Technologies</h2>
+<h2>🛰 Used Technologies (back & front-end)</h2>
 <ul>
   <li>JavaScript</li>
   <li>MongoDB</li>
