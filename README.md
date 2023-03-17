@@ -1,4 +1,4 @@
-<h1 align="center">👩🏼‍🔧 Small Companies Management System 👨🏼‍🔧</h1>
+<h1 align="center">👩🏼‍🔧 Small Business Management System 👨🏼‍🔧</h1>
 
 <h2>💻 Overview</h2>
 
