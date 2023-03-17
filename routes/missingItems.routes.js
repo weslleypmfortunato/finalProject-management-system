@@ -15,7 +15,7 @@ missingItemsRouter.post('/missing-products', isAuthenticatedMiddleware, async (r
     }
     const workOrder = new WorkOrder({ product: product._id, quantities })
     await workOrder.save()
-    res.status(201).json({message: "Missing list created succesfully"})
+    return res.status(201).json({message: "Missing list created succesfully"})
   } catch (error) {
     console.log(error)
     return res.status(500).json({message: "Internal server error"})
@@ -23,8 +23,21 @@ missingItemsRouter.post('/missing-products', isAuthenticatedMiddleware, async (r
 })
 
 missingItemsRouter.get('/missing-products', isAuthenticatedMiddleware, async (req, res) => {
+  const {startDate, endDate} = req.query
   try {
+    if (!startDate || !endDate) {
+      return res.status(400).json({message: "Missing start or end date"})
+    }
+
     const totalQtyPerItem = await WorkOrder.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gt: new Date(startDate),
+            $lte: new Date(endDate),
+          }
+        }
+      },
       {
         $group: {
           _id: '$product',
@@ -58,10 +71,15 @@ missingItemsRouter.get('/missing-products', isAuthenticatedMiddleware, async (re
       },
       {
         $project: {
-          _id: 0,
+          _id: 1,
           productCode: '$product.productCode',
           productDescription: '$product.productDescription',
           totalQuantity: 1,
+        }
+      },
+      {
+        $sort: {
+        productCode: 1
         }
       }
     ])
@@ -73,16 +91,5 @@ missingItemsRouter.get('/missing-products', isAuthenticatedMiddleware, async (re
     return res.status(500).json({message: 'Internal server error'})
   }
 }) 
-
-// missingItemsRouter.get('/missing-products', isAuthenticatedMiddleware, async (req, res) => {
-//   try {
-//     const catchMissinItems = await WorkOrder.find().populate('product', 'productCode productDescription')
-//     console.log("AQUI ==> ", catchMissinItems)
-//     return res.status(200).json(catchMissinItems)
-//   } catch (error) {
-//     console.log(error)
-//     return res.status(500).json({message: "Internal server error"})
-//   }
-// })
 
 export default missingItemsRouter

@@ -11,8 +11,7 @@ const workOrderSchema = new Schema ({
   quantities: {
     type: Number,
     required: true,
-    
-  },
+  }
 }, {timestamps: true})
 
 export default model ('WorkOrders', workOrderSchema)
