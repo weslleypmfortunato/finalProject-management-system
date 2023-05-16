@@ -5,7 +5,8 @@ import WorkOrder from '../models/WorkOrder.model.js.js'
 
 const missingItemsRouter = Router()
 
-missingItemsRouter.post('/missing-products', isAuthenticatedMiddleware, async (req, res) => {
+// missingItemsRouter.post('/missing-products', isAuthenticatedMiddleware, async (req, res) => {
+  missingItemsRouter.post('/missing-products', async (req, res) => {
   const { productCode, quantities } = req.body
   try {
     const product = await Products.findOne({productCode})
@@ -22,7 +23,8 @@ missingItemsRouter.post('/missing-products', isAuthenticatedMiddleware, async (r
   }
 })
 
-missingItemsRouter.get('/missing-products', isAuthenticatedMiddleware, async (req, res) => {
+// missingItemsRouter.get('/missing-products', isAuthenticatedMiddleware, async (req, res) => {
+  missingItemsRouter.get('/missing-products', async (req, res) => {
   const {startDate, endDate} = req.query
   try {
     if (!startDate || !endDate) {
