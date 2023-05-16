@@ -6,6 +6,7 @@ import WorkOrder from '../models/WorkOrder.model.js.js'
 const missingItemsRouter = Router()
 
 // missingItemsRouter.post('/missing-products', isAuthenticatedMiddleware, async (req, res) => {
+  // substituido pq no react-native eu não sabia como colocar para verificar se estava logado ou não
   missingItemsRouter.post('/missing-products', async (req, res) => {
   const { productCode, quantities } = req.body
   try {
@@ -24,12 +25,11 @@ const missingItemsRouter = Router()
 })
 
 // missingItemsRouter.get('/missing-products', isAuthenticatedMiddleware, async (req, res) => {
+  // substituido pq no react-native eu não sabia como colocar para verificar se estava logado ou não
   missingItemsRouter.get('/missing-products', async (req, res) => {
   const {startDate, endDate} = req.query
-  // const {startDate} = req.query
   try {
     if (!startDate || !endDate) {
-      // if (!startDate) {
       return res.status(400).json({message: "Missing start or end date"})
     }
 
@@ -38,7 +38,6 @@ const missingItemsRouter = Router()
         $match: {
           createdAt: {
             $gt: new Date(startDate),
-            // $gte: new Date(startDate),
             $lte: new Date(endDate),
           }
         }
