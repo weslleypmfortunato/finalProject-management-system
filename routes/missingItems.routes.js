@@ -25,11 +25,11 @@ const missingItemsRouter = Router()
 
 // missingItemsRouter.get('/missing-products', isAuthenticatedMiddleware, async (req, res) => {
   missingItemsRouter.get('/missing-products', async (req, res) => {
-  // const {startDate, endDate} = req.query
-  const {startDate} = req.query
+  const {startDate, endDate} = req.query
+  // const {startDate} = req.query
   try {
-    // if (!startDate || !endDate) {
-      if (!startDate) {
+    if (!startDate || !endDate) {
+      // if (!startDate) {
       return res.status(400).json({message: "Missing start or end date"})
     }
 
@@ -37,9 +37,9 @@ const missingItemsRouter = Router()
       {
         $match: {
           createdAt: {
-            // $gt: new Date(startDate),
-            $gte: new Date(startDate),
-            // $lte: new Date(endDate),
+            $gt: new Date(startDate),
+            // $gte: new Date(startDate),
+            $lte: new Date(endDate),
           }
         }
       },
